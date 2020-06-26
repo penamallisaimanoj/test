@@ -1,0 +1,329 @@
+import React from 'react';
+import TextField from '@material-ui/core/TextField';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from '@material-ui/core/Radio';
+import FormLabel from '@material-ui/core/FormLabel';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
+import Input from '@material-ui/core/Input';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import './App.css';
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      ruleName: "",
+      ruleType: "frequencyCap",
+      region: "",
+      countries: [],
+      channelType: "email",
+      ruleCriteria: "allProducts",
+      campaignId: "",
+      communicationFrequency: 2,
+      segmentId: "",
+      countriesOpen: false,
+      description: null,
+      components: {
+        ruleName: {
+          error: false,
+          helperText: null
+        },
+        region: {
+          error: false,
+          helperText: null
+        },
+        countries: {
+          error: false,
+          helperText: null
+        },
+        channelType: {
+          error: false,
+          helperText: null
+        },
+        campaignId: {
+          error: false,
+          helperText: null
+        },
+        segmentId: {
+          error: false,
+          helperText: null
+        },
+        communicationFrequency: {
+          error: false,
+          helperText: null
+        }
+      }
+    }
+  }
+  render() {
+    const countriesData = [
+      { code: "IN", name: "India", region: "APAC" },
+      { code: "CN", name: "China", region: "APAC" },
+      { code: "ID", name: "Indonesia", region: "APAC" },
+      { code: "US", name: "USA", region: "NA" },
+      { code: "CA", name: "Canada", region: "NA" },
+      { code: "MX", name: "Mexico", region: "NA" },
+      { code: "ES", name: "Spain", region: "EMEA" },
+      { code: "IT", name: "Italy", region: "EMEA" },
+      { code: "DE", name: "Germany", region: "EMEA" },
+      { code: "BR", name: "Brazil", region: "LATAM" },
+      { code: "CL", name: "Chile", region: "LATAM" },
+      { code: "PE", name: "Peru", region: "LATAM" },
+    ].sort((a,b) => a.name.localeCompare(b.name));
+    const regions = countriesData.map(entry => entry.region).filter((item, pos, self) => self.indexOf(item) == pos).sort();
+    const handleChangeRuleCriteria = (event) => {
+      if (event.target.value === "allProducts") {
+        document.getElementById("campaignId").style.display = "none";
+        document.getElementById("segmentId").style.display = "none";
+      }
+      else if (event.target.value === "segment") {
+        document.getElementById("campaignId").style.display = "none";
+        document.getElementById("segmentId").style.display = "block";
+      }
+      else if (event.target.value === "campaign") {
+        document.getElementById("campaignId").style.display = "block";
+        document.getElementById("segmentId").style.display = "none";
+      }
+      let state = this.state;
+      state.ruleCriteria = event.target.value;
+      this.setState(state);
+    }
+    const handleChangeRuleType = (event) => {
+      let state = this.state;
+      state.ruleType = event.target.value;
+      this.setState(state);
+      if (event.target.value === "frequencyCap") {
+        handleCountriesOpen();
+      }
+    }
+    const handleCountriesOpen = () => {
+      let state = this.state;
+      state.countriesOpen = true;
+      this.setState(state);
+    }
+    const handleCountriesClose = () => {
+      let state = this.state;
+      state.countriesOpen = false;
+      this.setState(state);
+    }
+    const onChangeRuleName = (event) => {
+      let state = this.state;
+      state.ruleName = event.target.value;
+      this.setState(state);
+    }
+    const onChangeRegion = (event) => {
+      let state = this.state;
+      state.region = event.target.value;
+      state.countries = [];
+      this.setState(state);
+    }
+    const onChangeCountries = (event) => {
+      let state = this.state;
+      state.countries = event.target.value;
+      this.setState(state);
+    }
+    const onChangeSelectAllCountries = (event) => {
+      if (event.target.checked) {
+        let state = this.state;
+        state.countries = countriesData.filter(country => (this.state.region !==null && this.state.region !== "") ? this.state.region === country.region : true).map(country => country.code);
+        this.setState(state);
+      }
+      else {
+        let state = this.state;
+        state.countries = [];
+        this.setState(state);
+      }
+    }
+    const onChangeChannelType = (event) => {
+      let state = this.state;
+      state.channelType = event.target.value;
+      this.setState(state);
+    }
+    const onChangeSegmentId = (event) => {
+      let state = this.state;
+      state.segmentId = event.target.value;
+      this.setState(state);
+    }
+    const onChangeCampaignId = (event) => {
+      let state = this.state;
+      state.campaignId = event.target.value;
+      this.setState(state);
+    }
+    const onChangeCommunicationFrequency = (event) => {
+      let state = this.state;
+      state.communicationFrequency = event.target.value;
+      this.setState(state);
+    }
+    const validate = () => {
+      let state = this.state;
+      console.log(this.state.countries.length);
+      if (this.state.ruleName === null || this.state.ruleName.length === 0) {
+        state.components.ruleName.error = true;
+        state.components.ruleName.helperText = "Rule Name Required";
+      }
+      else {
+        state.components.ruleName.error = false;
+        state.components.ruleName.helperText = null;
+      }
+      if (this.state.region === null || this.state.region.length === 0) {
+        state.components.region.error = true;
+        state.components.region.helperText = "Select Region";
+      }
+      else {
+        state.components.region.error = false;
+        state.components.region.helperText = null;
+      }
+      if (this.state.countries === null || this.state.countries.length === 0) {
+        state.components.countries.error = true;
+        state.components.countries.helperText = "Select Countries";
+      }
+      else {
+        state.components.countries.error = false;
+        state.components.countries.helperText = null;
+      }
+      if (this.state.channelType === null || this.state.channelType.length === 0) {
+        state.components.channelType.error = true;
+        state.components.channelType.helperText = "Select Channel Type";
+      }
+      else {
+        state.components.channelType.error = false;
+        state.components.channelType.helperText = null;
+      }
+      if (state.ruleCriteria === "segment") {
+        if (this.state.segmentId === null || this.state.segmentId.length === 0) {
+          state.components.segmentId.error = true;
+          state.components.segmentId.helperText = "Enter Segment Id";
+        }
+        else {
+          state.components.segmentId.error = false;
+          state.components.segmentId.helperText = null;
+        }
+      }
+      else if (state.ruleCriteria === "campaign") {
+        if (this.state.campaignId === null || this.state.campaignId.length === 0) {
+          state.components.campaignId.error = true;
+          state.components.campaignId.helperText = "Enter Campaign Id";
+        }
+        else {
+          state.components.campaignId.error = false;
+          state.components.campaignId.helperText = null;
+        }
+      }
+      if (this.state.communicationFrequency === null || this.state.communicationFrequency <= 0) {
+        state.components.communicationFrequency.error = true;
+        state.components.communicationFrequency.helperText = "Enter Communication Frequency";
+      }
+      else {
+        state.components.communicationFrequency.error = false;
+        state.components.communicationFrequency.helperText = null;
+      }
+      // if(state.channelType !== null && state.channelType !== "" && state.communicationFrequency === null || state.communicationFrequency <= 0){
+      //   let ruleType = state.ruleType === "frequencyCap" ? "Weekly Frequency Cap" : "Cadence Cap"
+      //   if(state.ruleCriteria === "allProducts"){
+      //     "<b>"+ruleType+"</b>"
+      //   }
+      //   else if(state.ruleCriteria === "segment" && state.segmentId !== null && state.segmentId !== ""){
+
+      //   }
+      //   else if(state.ruleCriteria === "campaign" && state.campaignId !== null && state.campaignId !== ""){
+
+      //   }
+      //   else{
+      //     state.description = null;
+      //   }
+      // }
+      // else {
+      //   state.description = null;
+      // }
+      this.setState(state);
+    }
+    return (
+      <div style={{ display: "flex", flexDirection: "column", width: "1000px", backgroundColor: "#ffffff", border:"1px solid black", borderRadius:"5px"}}>
+        <div style={{ margin: "5px 10px" }}>
+          <TextField error={this.state.components.ruleName.error} helperText={this.state.components.ruleName.helperText} required id="standard-required" label="Rule Name" placeholder="Enter Rule Name" value={this.state.ruleName} onChange={onChangeRuleName} />
+        </div>
+        <hr style={{border: 0,clear:"both",display:"block",width: "96%", backgroundColor:"#dddddd",height: "1px"}}></hr>
+        <div style={{ display: "flex", flexDirection: "row", margin: "5px 10px" }}>
+          <div>
+            <FormLabel component="legend">Rule Type</FormLabel>
+            <RadioGroup name="ruleType" onChange={handleChangeRuleType} value={this.state.ruleType}>
+              <FormControlLabel value="frequencyCap" control={<Radio />} label="Weekly Frequency Cap" />
+              <FormControlLabel value="cadenceCap" control={<Radio />} label="Cadence Cap" />
+            </RadioGroup>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", flexGrow: 1, margin: "0px 5px 50px 5px" }} >
+            <FormLabel component="legend">Select Region</FormLabel>
+            <Select error={this.state.components.region.error} helperText={this.state.components.region.helperText} style={{ flexGrow: "1" }} value={this.state.region} onChange={onChangeRegion}>
+              {regions.map(element => (
+                <MenuItem value={element}>{element}</MenuItem>
+              ))}
+            </Select>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", flexGrow: 1, margin: "0px 5px 50px 5px" }} >
+            <FormLabel component="legend">Countries</FormLabel>
+            <Select
+              error={this.state.components.countries.error}
+              helperText={this.state.components.countries.helperText}
+              multiple
+              value={this.state.countries}
+              onChange={onChangeCountries}
+              input={<Input />}
+              renderValue={(selected) => selected.join(', ')}
+            >
+              <MenuItem key="All Countries" value="-1">
+                <Checkbox checked={this.state.countries.length === countriesData.filter(country => (this.state.region !==null && this.state.region !== "") ? this.state.region === country.region : true).length} onChange={onChangeSelectAllCountries} />
+                <ListItemText primary="All Countries  " />
+              </MenuItem>
+              {countriesData.filter(country => (this.state.region !==null && this.state.region !== "") ? this.state.region === country.region : true).map((element) => (
+                <MenuItem key={element.name} value={element.code}>
+                  <Checkbox checked={this.state.countries.indexOf(element.code) > -1} />
+                  <ListItemText primary={element.name} />
+                </MenuItem>
+              ))}
+            </Select>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", flexGrow: 1, margin: "0px 5px 50px 5px" }} >
+            <FormLabel component="legend">Select Channel Type</FormLabel>
+            <Select error={this.state.components.channelType.error} helperText={this.state.components.channelType.helperText} style={{ flexGrow: "1" }} value={this.state.channelType} onChange={onChangeChannelType}>
+              <MenuItem value="email">Email</MenuItem>
+            </Select>
+          </div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "row", margin: "5px 10px" }}>
+          <div>
+            <FormLabel component="legend">Rule Criteria</FormLabel>
+            <RadioGroup name="ruleCriteria" onChange={handleChangeRuleCriteria} value={this.state.ruleCriteria} >
+              <FormControlLabel value="allProducts" control={<Radio />} label="All Products" />
+              <FormControlLabel value="segment" control={<Radio />} label="Segment" />
+              <FormControlLabel value="campaign" control={<Radio />} label="Campaign" />
+            </RadioGroup>
+          </div>
+          <div id="campaignId" style={{ display: "flex", flexGrow: 1, display: "none" }}>
+            <TextField error={this.state.components.campaignId.error} helperText={this.state.components.campaignId.helperText} required label="Campaign ID" style={{ flexGrow: 1, margin: "0px 5px" }} value={this.state.campaignId} onChange={onChangeCampaignId} />
+          </div>
+          <div id="segmentId" style={{ display: "flex", flexGrow: 1, display: "none" }}>
+            <TextField error={this.state.components.segmentId.error} helperText={this.state.components.segmentId.helperText} required label="Segement ID" style={{ flexGrow: 1, margin: "0px 5px" }} value={this.state.segmentId} onChange={onChangeSegmentId} />
+          </div>
+          <div>
+            <TextField error={this.state.components.communicationFrequency.error} helperText={this.state.components.communicationFrequency.helperText} required label="Elapsed Time B/w Contact" style={{ margin: "0px 5px" }} type="number" value={this.state.communicationFrequency} onChange={onChangeCommunicationFrequency} />
+          </div>
+        </div>
+        {/* <div style={{display: this.state.description !== null ? "block" : "none"}}>
+          <h4>Description</h4>
+          <p>{this.state.description}</p>
+        </div> */}
+        <div style={{ display: "flex", justifyContent: "flex-end", margin: "5px 10px" }}>
+          <Button variant="contained" color="primary" style={{ margin: "0px 10px" }} onClick={validate}>
+            Submit
+          </Button>
+        </div>
+      </div>
+    );
+  }
+}
+
+export default App;
